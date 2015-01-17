@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -70,7 +71,10 @@ public class MainActivity extends ActionBarActivity {
             forecasts.add("Fri - Foggy - 70/46");
             forecasts.add("Sat - Sunny - 76/68");
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecasts);
+
+            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+            listView.setAdapter(adapter);
 
             return rootView;
         }
