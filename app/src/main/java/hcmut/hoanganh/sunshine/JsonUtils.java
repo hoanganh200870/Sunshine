@@ -1,5 +1,9 @@
 package hcmut.hoanganh.sunshine;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +30,19 @@ public class JsonUtils {
     /**
      * Prepare the weather high/lows for presentation.
      */
-    public static String formatHighLows(double high, double low) {
+    public static String formatHighLows(double high, double low, Context context) {
+
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.pref_units_key);
+        String defaultValue = context.getString(R.string.pref_units_default);
+        String unitType = defaultSharedPreferences.getString(key, defaultValue);
+
+        String imperialType = context.getString(R.string.pref_units_imperial);
+        if (unitType.equals(imperialType)) {
+            low = low * 1.8 + 32;
+            high = high * 1.8 + 32;
+        }
+
         // For presentation, assume the user doesn't care about tenths of a degree.
         long roundedHigh = Math.round(high);
         long roundedLow = Math.round(low);
@@ -42,7 +58,7 @@ public class JsonUtils {
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    public static String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
+    public static String[] getWeatherDataFromJson(String forecastJsonStr, int numDays, Context context)
             throws JSONException {
 
         // These are the names of the JSON objects that need to be extracted.
@@ -83,7 +99,7 @@ public class JsonUtils {
             double high = temperatureObject.getDouble(OWM_MAX);
             double low = temperatureObject.getDouble(OWM_MIN);
 
-            highAndLow = formatHighLows(high, low);
+            highAndLow = formatHighLows(high, low, context);
             resultStrs[i] = day + " - " + description + " - " + highAndLow;
         }
 

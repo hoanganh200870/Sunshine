@@ -135,7 +135,7 @@ public class ForecastFragment extends Fragment {
                 String data = EntityUtils.toString(entity);
 
                 try {
-                    result = JsonUtils.getWeatherDataFromJson(data, NUM_OF_DAYS);
+                    result = JsonUtils.getWeatherDataFromJson(data, NUM_OF_DAYS, getActivity());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

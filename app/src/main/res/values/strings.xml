@@ -10,5 +10,9 @@
     <string name="pref_location_default">Ho Chi Minh</string>
     <string name="pref_location_key">location</string>
     <string name="pref_location_title">Location</string>
+    <string name="pref_units_key">unit</string>
+    <string name="pref_units_title">Unit</string>
+    <string name="pref_units_default">metric</string>
+    <string name="pref_units_imperial">imperial</string>
 
 </resources>
