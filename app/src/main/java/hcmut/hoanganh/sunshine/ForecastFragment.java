@@ -20,6 +20,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,6 +81,17 @@ public class ForecastFragment extends Fragment {
         listView.setAdapter(adapter);
 
         return rootView;
+    }
+
+    public static double getMaxTemperatureForDay(String weatherJsonStr, int dayIndex)
+            throws JSONException {
+
+        JSONObject data = new JSONObject(weatherJsonStr);
+        JSONArray days = data.getJSONArray("list");
+        JSONObject day = days.getJSONObject(dayIndex);
+        JSONObject temp = day.getJSONObject("temp");
+        double max = temp.getDouble("max");
+        return max;
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
