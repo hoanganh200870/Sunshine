@@ -65,7 +65,7 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         weatherAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview);
@@ -78,6 +78,8 @@ public class ForecastFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Context context = getActivity();
                 Intent intent = new Intent(context, DetailActivity.class);
+                String data = weatherAdapter.getItem(position);
+                intent.putExtra(DetailActivity.EXTRA, data);
                 startActivity(intent);
             }
         });

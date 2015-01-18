@@ -1,5 +1,8 @@
 package hcmut.hoanganh.sunshine;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -10,15 +13,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.TextView;
 
 
 public class DetailActivity extends ActionBarActivity {
+
+    public static final String EXTRA = "data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
         if (savedInstanceState == null) {
+            ;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
@@ -53,13 +61,20 @@ public class DetailActivity extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+            Activity activity = getActivity();
+            Intent intent = activity.getIntent();
+
+            if (intent != null && intent.hasExtra(EXTRA)) {
+                String data = intent.getStringExtra(EXTRA);
+                TextView txtData = (TextView) rootView.findViewById(R.id.txtData);
+                txtData.setText(data);
+            }
+
             return rootView;
         }
     }
