@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
                 String location = defaultSharedPreferences.getString(key, defaultValue);
 
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = Uri.parse("geo:0,0?q=" + location);
+                Uri uri = Uri.parse("geo:0,0").buildUpon().appendQueryParameter("q", location).build();
                 mapIntent.setData(uri);
 
                 ComponentName resolveActivity = mapIntent.resolveActivity(getPackageManager());
