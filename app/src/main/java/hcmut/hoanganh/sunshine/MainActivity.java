@@ -1,8 +1,10 @@
 package hcmut.hoanganh.sunshine;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,7 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -25,6 +36,26 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+
+                String url = "http://api.openweathermap.org/data/2.5/forecast/daily?cnt=7&q=94043&mode=json&units=metric";
+                HttpGet get = new HttpGet(url);
+                HttpClient client = new DefaultHttpClient();
+                try {
+                    HttpResponse response = client.execute(get);
+                    HttpEntity entity = response.getEntity();
+                    String data = EntityUtils.toString(entity);
+                    Log.e("Data", data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+        }.execute();
     }
 
 
