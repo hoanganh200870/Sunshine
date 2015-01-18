@@ -2,9 +2,11 @@ package hcmut.hoanganh.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,7 +59,11 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_refresh:
-                new FetchWeatherTask().execute("Ho Chi Minh");
+                SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String key = getString(R.string.pref_location_key);
+                String defaultValue = getString(R.string.pref_location_default);
+                String location = defaultSharedPreferences.getString(key, defaultValue);
+                new FetchWeatherTask().execute(location);
                 return true;
         }
 
