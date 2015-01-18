@@ -1,6 +1,7 @@
 package hcmut.hoanganh.sunshine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -75,9 +76,9 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String data = weatherAdapter.getItem(position);
                 Context context = getActivity();
-                Toast.makeText(context, data, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, DetailActivity.class);
+                startActivity(intent);
             }
         });
 
