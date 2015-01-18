@@ -1,5 +1,6 @@
 package hcmut.hoanganh.sunshine;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -56,7 +57,10 @@ public class MainActivity extends ActionBarActivity {
                 Uri uri = Uri.parse("geo:0,0?q=" + location);
                 mapIntent.setData(uri);
 
-                startActivity(mapIntent);
+                ComponentName resolveActivity = mapIntent.resolveActivity(getPackageManager());
+                if (resolveActivity != null) {
+                    startActivity(mapIntent);
+                }
 
                 return true;
         }
