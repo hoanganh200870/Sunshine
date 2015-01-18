@@ -1,7 +1,10 @@
 package hcmut.hoanganh.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +21,7 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new ForecastFragment())
                     .commit();
         }
-        
+
     }
 
 
@@ -41,6 +44,20 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.aciton_show_location:
+
+                SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                String key = getString(R.string.pref_location_key);
+                String defaultValue = getString(R.string.pref_location_default);
+                String location = defaultSharedPreferences.getString(key, defaultValue);
+
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = Uri.parse("geo:0,0?q=" + location);
+                mapIntent.setData(uri);
+
+                startActivity(mapIntent);
+
                 return true;
         }
 
