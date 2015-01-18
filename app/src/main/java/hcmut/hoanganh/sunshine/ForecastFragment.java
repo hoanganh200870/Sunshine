@@ -53,17 +53,27 @@ public class ForecastFragment extends Fragment {
         inflater.inflate(R.menu.forecast_fragment, menu);
     }
 
+    private void updateWeather() {
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String key = getString(R.string.pref_location_key);
+        String defaultValue = getString(R.string.pref_location_default);
+        String location = defaultSharedPreferences.getString(key, defaultValue);
+        new FetchWeatherTask().execute(location);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.updateWeather();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
         switch (id) {
             case R.id.action_refresh:
-                SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String key = getString(R.string.pref_location_key);
-                String defaultValue = getString(R.string.pref_location_default);
-                String location = defaultSharedPreferences.getString(key, defaultValue);
-                new FetchWeatherTask().execute(location);
+                this.updateWeather();
                 return true;
         }
 
