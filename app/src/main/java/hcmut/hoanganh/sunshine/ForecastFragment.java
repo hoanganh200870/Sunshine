@@ -1,5 +1,6 @@
 package hcmut.hoanganh.sunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,7 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_refresh:
-                new FetchWeatherTask().execute();
+                new FetchWeatherTask().execute("Ho Chi Minh");
                 return true;
         }
 
@@ -79,13 +80,23 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
+    public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
 
-            String url = "http://api.openweathermap.org/data/2.5/forecast/daily?cnt=7&q=94043&mode=json&units=metric";
-            HttpGet get = new HttpGet(url);
+            if (params.length == 0) {
+                return null;
+            }
+
+            Uri.Builder builder = Uri.parse("http://api.openweathermap.org/data/2.5/forecast/daily").buildUpon();
+            builder.appendQueryParameter("cnt", "7");
+            builder.appendQueryParameter("q", params[0]);
+            builder.appendQueryParameter("mode", "json");
+            builder.appendQueryParameter("units", "metric");
+
+            Uri url = builder.build();
+            HttpGet get = new HttpGet(url.toString());
             HttpClient client = new DefaultHttpClient();
             try {
                 HttpResponse response = client.execute(get);
