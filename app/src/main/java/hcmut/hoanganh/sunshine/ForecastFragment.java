@@ -23,7 +23,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -65,28 +64,21 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        ArrayList<String> forecasts = new ArrayList<>();
-        forecasts.add("Today - Sunny - 88/63");
-        forecasts.add("Tomorrow - Foggy - 70/46");
-        forecasts.add("Weds - Cloudy - 72/63");
-        forecasts.add("Thurs - Rainy - 64/54");
-        forecasts.add("Fri - Foggy - 70/46");
-        forecasts.add("Sat - Sunny - 76/68");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecasts);
+        weatherAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(adapter);
+        listView.setAdapter(weatherAdapter);
 
         return rootView;
     }
 
-    public static class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+    private ArrayAdapter<String> weatherAdapter;
 
-        public static final int NUM_OF_DAYS = 7;
-        public static final String FORMAT = "json";
-        public static final String UNITS = "metric";
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+
+        public final int NUM_OF_DAYS = 7;
+        public final String FORMAT = "json";
+        public final String UNITS = "metric";
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -125,5 +117,16 @@ public class ForecastFragment extends Fragment {
             return result;
         }
 
+        @Override
+        protected void onPostExecute(String[] result) {
+            if (result != null) {
+
+                weatherAdapter.clear();
+
+                for (String item : result) {
+                    weatherAdapter.add(item);
+                }
+            }
+        }
     }
 }
