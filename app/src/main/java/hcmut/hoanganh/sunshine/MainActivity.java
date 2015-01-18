@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -33,29 +32,10 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
-
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-
-                String url = "http://api.openweathermap.org/data/2.5/forecast/daily?cnt=7&q=94043&mode=json&units=metric";
-                HttpGet get = new HttpGet(url);
-                HttpClient client = new DefaultHttpClient();
-                try {
-                    HttpResponse response = client.execute(get);
-                    HttpEntity entity = response.getEntity();
-                    String data = EntityUtils.toString(entity);
-                    Log.e("Data", data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-        }.execute();
+        
     }
 
 
@@ -81,33 +61,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            ArrayList<String> forecasts = new ArrayList<>();
-            forecasts.add("Today - Sunny - 88/63");
-            forecasts.add("Tomorrow - Foggy - 70/46");
-            forecasts.add("Weds - Cloudy - 72/63");
-            forecasts.add("Thurs - Rainy - 64/54");
-            forecasts.add("Fri - Foggy - 70/46");
-            forecasts.add("Sat - Sunny - 76/68");
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecasts);
-
-            ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-            listView.setAdapter(adapter);
-
-            return rootView;
-        }
-    }
 }
