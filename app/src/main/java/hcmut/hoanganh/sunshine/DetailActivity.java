@@ -4,13 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.apache.http.protocol.HTTP;
 
 
 public class DetailActivity extends ActionBarActivity {
@@ -23,13 +28,11 @@ public class DetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_detail);
 
         if (savedInstanceState == null) {
-            ;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,6 +63,50 @@ public class DetailActivity extends ActionBarActivity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        private ShareActionProvider shareProvider;
+        private String data;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            setHasOptionsMenu(true);
+        }
+
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.menu_detail_fragment, menu);
+
+            MenuItem item = menu.findItem(R.id.action_share);
+            shareProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+
+            int id = item.getItemId();
+            switch (id) {
+                case R.id.action_share:
+                    if (shareProvider == null) {
+                        return true;
+                    }
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                    sendIntent.setType(HTTP.PLAIN_TEXT_TYPE);
+
+                    if (data != null) {
+                        String text = getString(R.string.format_share, data);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+                        shareProvider.setShareIntent(sendIntent);
+                    }
+
+                    return true;
+            }
+
+            return super.onOptionsItemSelected(item);
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -69,7 +116,7 @@ public class DetailActivity extends ActionBarActivity {
             Intent intent = activity.getIntent();
 
             if (intent != null && intent.hasExtra(EXTRA)) {
-                String data = intent.getStringExtra(EXTRA);
+                data = intent.getStringExtra(EXTRA);
                 TextView txtData = (TextView) rootView.findViewById(R.id.txtData);
                 txtData.setText(data);
             }
