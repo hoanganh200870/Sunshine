@@ -20,12 +20,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by H.Anh on 18/01/2015.
@@ -83,45 +82,47 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    public static double getMaxTemperatureForDay(String weatherJsonStr, int dayIndex)
-            throws JSONException {
+    public static class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
-        JSONObject data = new JSONObject(weatherJsonStr);
-        JSONArray days = data.getJSONArray("list");
-        JSONObject day = days.getJSONObject(dayIndex);
-        JSONObject temp = day.getJSONObject("temp");
-        double max = temp.getDouble("max");
-        return max;
-    }
-
-    public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
+        public static final int NUM_OF_DAYS = 7;
+        public static final String FORMAT = "json";
+        public static final String UNITS = "metric";
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
 
             if (params.length == 0) {
                 return null;
             }
 
             Uri.Builder builder = Uri.parse("http://api.openweathermap.org/data/2.5/forecast/daily").buildUpon();
-            builder.appendQueryParameter("cnt", "7");
+            builder.appendQueryParameter("cnt", Integer.toString(NUM_OF_DAYS));
             builder.appendQueryParameter("q", params[0]);
-            builder.appendQueryParameter("mode", "json");
-            builder.appendQueryParameter("units", "metric");
+            builder.appendQueryParameter("mode", FORMAT);
+            builder.appendQueryParameter("units", UNITS);
 
             Uri url = builder.build();
             HttpGet get = new HttpGet(url.toString());
             HttpClient client = new DefaultHttpClient();
+
+            String[] result = null;
             try {
                 HttpResponse response = client.execute(get);
                 HttpEntity entity = response.getEntity();
                 String data = EntityUtils.toString(entity);
-                Log.e("Data", data);
+
+                try {
+                    result = JsonUtils.getWeatherDataFromJson(data, NUM_OF_DAYS);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.e("Data", Arrays.asList(result).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return null;
+            return result;
         }
 
     }
