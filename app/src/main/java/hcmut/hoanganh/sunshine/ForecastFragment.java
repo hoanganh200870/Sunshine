@@ -2,13 +2,15 @@ package hcmut.hoanganh.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,29 +18,71 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
+import java.util.Date;
 
-import java.io.IOException;
-import java.util.Arrays;
+import hcmut.hoanganh.sunshine.data.WeatherContract;
 
 /**
  * Created by H.Anh on 18/01/2015.
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public ForecastFragment() {
+    private SimpleCursorAdapter weatherAdapter;
 
+    private String mLocation;
+    private boolean isImperial;
+    private final int FORECAST_LOADER = 0;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+    }
+
+    public static final String[] FORECAST_COLUMNS = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATETEXT,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING
+    };
+
+    public static final int COL_WEATHER_ID = 0;
+    public static final int COL_DATETEXT = 1;
+    public static final int COL_SHORT_DESC = 2;
+    public static final int COL_MAX_TEMP = 3;
+    public static final int COL_MIN_TEMP = 4;
+    public static final int COL_LOCATION_SETTING = 5;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Date now = new Date();
+        String startDate = WeatherContract.getDbDateString(now);
+
+        Context context = getActivity();
+        mLocation = Utilities.getLocationSetting(context);
+        isImperial = Utilities.isImperial(context);
+
+        Uri weatherLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(mLocation, startDate);
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATETEXT + " ASC ";
+
+        CursorLoader cursorLoader = new CursorLoader(context, weatherLocationUri, FORECAST_COLUMNS, null, null, sortOrder);
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        weatherAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        weatherAdapter.swapCursor(null);
     }
 
     @Override
@@ -53,18 +97,27 @@ public class ForecastFragment extends Fragment {
         inflater.inflate(R.menu.forecast_fragment, menu);
     }
 
-    private void updateWeather() {
-        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String key = getString(R.string.pref_location_key);
-        String defaultValue = getString(R.string.pref_location_default);
-        String location = defaultSharedPreferences.getString(key, defaultValue);
-        new FetchWeatherTask().execute(location);
-    }
+//    private void updateWeather() {
+//        Context context = getActivity();
+//        new FetchWeatherTask(context).execute();
+//    }
 
     @Override
     public void onStart() {
         super.onStart();
-        this.updateWeather();
+//        this.updateWeather();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Context context = getActivity();
+        String location = Utilities.getLocationSetting(context);
+        boolean isImperial = Utilities.isImperial(context);
+        if (mLocation != null && !location.equals(mLocation) || this.isImperial != isImperial) {
+            getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+        }
     }
 
     @Override
@@ -73,7 +126,7 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_refresh:
-                this.updateWeather();
+//                this.updateWeather();
                 return true;
         }
 
@@ -84,7 +137,24 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        weatherAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview);
+
+        final Context context = getActivity();
+
+        String[] from = {
+                WeatherContract.WeatherEntry.COLUMN_DATETEXT,
+                WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+                WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+                WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
+        };
+
+        int[] to = {
+                R.id.list_item_date_textview,
+                R.id.list_item_forecast_textview,
+                R.id.list_item_high_textview,
+                R.id.list_item_low_textview
+        };
+
+        weatherAdapter = new SimpleCursorAdapter(context, R.layout.list_item_forecast, null, from, to, 0);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(weatherAdapter);
@@ -92,20 +162,36 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = getActivity();
-                Intent intent = new Intent(context, DetailActivity.class);
-                String data = weatherAdapter.getItem(position);
-                intent.putExtra(DetailActivity.EXTRA, data);
-                startActivity(intent);
+                Cursor cursor = weatherAdapter.getCursor();
+
+                if (cursor != null && cursor.moveToPosition(position)) {
+                    boolean isImperial = Utilities.isImperial(context);
+
+                    String date = cursor.getString(COL_DATETEXT);
+                    date = Utilities.formatDate(date);
+
+                    String city = cursor.getString(COL_SHORT_DESC);
+
+                    double high = cursor.getDouble(COL_MAX_TEMP);
+                    String highFormatted = Utilities.formatTemperature(high, isImperial);
+
+                    double low = cursor.getDouble(COL_MIN_TEMP);
+                    String lowFormatted = Utilities.formatTemperature(low, isImperial);
+
+                    String forecast = String.format("%s - %s - %s / %s",
+                            date, city, highFormatted, lowFormatted);
+
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra(DetailActivity.EXTRA, forecast);
+                    startActivity(intent);
+                }
             }
         });
 
         return rootView;
     }
 
-    private ArrayAdapter<String> weatherAdapter;
-
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+    /*public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         public final int NUM_OF_DAYS = 7;
         public final String FORMAT = "json";
@@ -135,7 +221,7 @@ public class ForecastFragment extends Fragment {
                 String data = EntityUtils.toString(entity);
 
                 try {
-                    result = JsonUtils.getWeatherDataFromJson(data, NUM_OF_DAYS, getActivity());
+                    result = JsonUtils.getWeatherDataFromJson(data, NUM_OF_DAYS, getActivity(), null);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -159,5 +245,5 @@ public class ForecastFragment extends Fragment {
                 }
             }
         }
-    }
+    }*/
 }

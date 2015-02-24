@@ -29,6 +29,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.example.android.sunshine.app"
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.hcmut.hoanganh.sunshine.permission"/>
     </application>
 
+    <permission android:name="com.hcmut.hoanganh.sunshine.permission"
+        android:protectionLevel="dangerous"
+        android:label="Licenced for all" />
+    
 </manifest>

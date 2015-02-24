@@ -6,6 +6,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
+import hcmut.hoanganh.sunshine.data.WeatherContract;
+
 /**
  * Created by H.Anh on 19/01/2015.
  */
@@ -32,12 +34,16 @@ public class SettingsActivity extends PreferenceActivity
         bindPreferenceSummaryToValue(preference);
     }
 
+    private boolean mBindingPreference;
+
     /**
      * Attaches a listener so the summary is always updated with the preference value.
      * Also fires the listener once, to initialize the summary (so it shows up before the value
      * is changed.)
      */
     private void bindPreferenceSummaryToValue(Preference preference) {
+        mBindingPreference = true;
+
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
 
@@ -47,11 +53,25 @@ public class SettingsActivity extends PreferenceActivity
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+
+        mBindingPreference = false;
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object value) {
         String stringValue = value.toString();
+
+        if (!mBindingPreference) {
+            String key = preference.getKey();
+            String locationKey = getString(R.string.pref_location_key);
+            if (key.equals(locationKey)) {
+                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
+                weatherTask.execute();
+            } else {
+                // notify code that weather may be impacted
+                getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+            }
+        }
 
         if (preference instanceof ListPreference) {
             // For list preferences, look up the correct display value in
