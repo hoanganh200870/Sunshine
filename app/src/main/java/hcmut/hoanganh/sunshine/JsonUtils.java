@@ -34,9 +34,9 @@ public class JsonUtils {
      * Prepare the weather high/lows for presentation.
      */
     public static String formatHighLows(double high, double low, Context context) {
-        boolean isImperial = Utilities.isImperial(context);
-        String lowFormatted = Utilities.formatTemperature(low, isImperial);
-        String highFormatted = Utilities.formatTemperature(high, isImperial);
+        boolean isMetric = Utility.isMetric(context);
+        String lowFormatted = Utility.formatTemperature(context, low, isMetric);
+        String highFormatted = Utility.formatTemperature(context, high, isMetric);
 
         String highLowStr = highFormatted + "/" + lowFormatted;
         return highLowStr;

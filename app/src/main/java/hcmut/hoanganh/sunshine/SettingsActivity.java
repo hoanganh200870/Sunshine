@@ -1,10 +1,12 @@
 package hcmut.hoanganh.sunshine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 
 import hcmut.hoanganh.sunshine.data.WeatherContract;
 
@@ -88,4 +90,11 @@ public class SettingsActivity extends PreferenceActivity
         return true;
     }
 
+    @Nullable
+    @Override
+    public Intent getParentActivityIntent() {
+        Intent parentActivityIntent = super.getParentActivityIntent();
+        Intent intent = parentActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
 }

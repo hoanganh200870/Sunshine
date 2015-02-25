@@ -1,28 +1,73 @@
 package hcmut.hoanganh.sunshine;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
+
+    private boolean isTwoPane;
+
+    @Override
+    public void onItemSelected(String date) {
+        if (isTwoPane) {
+            FragmentManager supportFragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+
+            DetailFragment detailFragment = new DetailFragment();
+            Bundle args = new Bundle();
+            args.putString(DetailFragment.DATE_EXTRA, date);
+            detailFragment.setArguments(args);
+
+            fragmentTransaction.replace(R.id.weather_detail_container, detailFragment);
+            fragmentTransaction.commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(DetailActivity.EXTRA, date);
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
-                    .commit();
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.container, new ForecastFragment())
+//                    .commit();
+//        }
+
+        View detailFragment = findViewById(R.id.weather_detail_container);
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+
+        isTwoPane = detailFragment != null;
+        Log.e("Main Activity", "Two pane: " + isTwoPane);
+        if (isTwoPane) {
+            Log.e("Main Activity", "Saved state: " + savedInstanceState);
+            if (savedInstanceState == null) {
+
+                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.weather_detail_container, new DetailFragment());
+                fragmentTransaction.commit();
+            }
         }
 
+        ForecastFragment forecastFragment = (ForecastFragment) supportFragmentManager.findFragmentById(R.id.fragment_forecast);
+        forecastFragment.setIsTwoPane(isTwoPane);
     }
 
 

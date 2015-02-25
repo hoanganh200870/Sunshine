@@ -4,11 +4,9 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -42,7 +40,7 @@ public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        String locationSetting = Utilities.getLocationSetting(context);
+        String locationSetting = Utility.getLocationSetting(context);
 
         Uri.Builder builder = Uri.parse("http://api.openweathermap.org/data/2.5/forecast/daily").buildUpon();
         builder.appendQueryParameter("cnt", Integer.toString(NUM_OF_DAYS));
