@@ -1,6 +1,8 @@
 package hcmut.hoanganh.sunshine;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -121,8 +123,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather() {
         Context context = getActivity();
-        Intent intent = new Intent(context, SunshineService.class);
-        context.startService(intent);
+
+        Intent alarmIntent = new Intent(context, SunshineService.AlarmReceiver.class);
+//        alarmIntent.putExtra(SunshineService.AlarmReceiver.EXTRA_LOCATION, mLocation);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        long time = System.currentTimeMillis() + 5000;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
 
     @Override

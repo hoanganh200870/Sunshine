@@ -1,6 +1,7 @@
 package hcmut.hoanganh.sunshine.service;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -72,4 +73,16 @@ public class SunshineService extends IntentService {
     public final int NUM_OF_DAYS = 7;
     public final String FORMAT = "json";
     public final String UNITS = "metric";
+
+    public static class AlarmReceiver extends BroadcastReceiver {
+
+//        public static final String EXTRA_LOCATION = "extra_location";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Intent sendIntent = new Intent(context, SunshineService.class);
+            context.startService(sendIntent);
+        }
+    }
+
 }

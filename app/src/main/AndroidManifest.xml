@@ -38,10 +38,12 @@
             android:permission="com.hcmut.hoanganh.sunshine.permission"/>
         <service android:name=".service.SunshineService">
         </service>
+        <receiver android:name=".service.SunshineService$AlarmReceiver">
+        </receiver>
     </application>
 
     <permission android:name="com.hcmut.hoanganh.sunshine.permission"
         android:protectionLevel="dangerous"
         android:label="Licenced for all" />
-    
+
 </manifest>
