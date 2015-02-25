@@ -24,6 +24,7 @@ import java.util.Date;
 
 import hcmut.hoanganh.sunshine.adapter.ForecastAdapter;
 import hcmut.hoanganh.sunshine.data.WeatherContract;
+import hcmut.hoanganh.sunshine.service.SunshineService;
 
 /**
  * Created by H.Anh on 18/01/2015.
@@ -118,10 +119,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         inflater.inflate(R.menu.forecast_fragment, menu);
     }
 
-//    private void updateWeather() {
-//        Context context = getActivity();
-//        new FetchWeatherTask(context).execute();
-//    }
+    private void updateWeather() {
+        Context context = getActivity();
+        Intent intent = new Intent(context, SunshineService.class);
+        context.startService(intent);
+    }
 
     @Override
     public void onResume() {
@@ -141,7 +143,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         int id = item.getItemId();
         switch (id) {
             case R.id.action_refresh:
-//                this.updateWeather();
+                updateWeather();
                 return true;
         }
 

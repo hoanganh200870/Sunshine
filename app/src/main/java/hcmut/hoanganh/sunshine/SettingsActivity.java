@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 import hcmut.hoanganh.sunshine.data.WeatherContract;
+import hcmut.hoanganh.sunshine.service.SunshineService;
 
 /**
  * Created by H.Anh on 19/01/2015.
@@ -67,8 +68,11 @@ public class SettingsActivity extends PreferenceActivity
             String key = preference.getKey();
             String locationKey = getString(R.string.pref_location_key);
             if (key.equals(locationKey)) {
-                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
-                weatherTask.execute();
+//                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
+//                weatherTask.execute();
+                Intent intent = new Intent(this, SunshineService.class);
+                startService(intent);
+
             } else {
                 // notify code that weather may be impacted
                 getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);

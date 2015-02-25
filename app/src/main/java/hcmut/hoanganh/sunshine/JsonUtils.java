@@ -1,8 +1,11 @@
 package hcmut.hoanganh.sunshine;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -82,7 +85,7 @@ public class JsonUtils {
         double cityLatitude = coordJSON.getLong(OWM_COORD_LAT);
         double cityLongitude = coordJSON.getLong(OWM_COORD_LONG);
 
-        long locationId = FetchWeatherTask.addLocation(context, locationSetting, cityName, cityLatitude, cityLongitude);
+        long locationId = addLocation(context, locationSetting, cityName, cityLatitude, cityLongitude);
 
         JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
@@ -143,6 +146,31 @@ public class JsonUtils {
         }
 
         return resultStrs;
+    }
+
+    public static long addLocation(Context context, String locationSetting, String cityName, double lat, double lon) {
+        ContentResolver contentResolver = context.getContentResolver();
+
+        String[] projection = {WeatherContract.LocationEntry._ID };
+        String selection = WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
+        String[] selectionArgs = { locationSetting };
+        Cursor cursor = contentResolver.query(WeatherContract.LocationEntry.CONTENT_URI, projection, selection, selectionArgs, null);
+
+        if (cursor.moveToFirst()) {
+            int index = cursor.getColumnIndex(WeatherContract.LocationEntry._ID);
+            long id = cursor.getLong(index);
+            return id;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+        values.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+        values.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
+
+        Uri locationUri = contentResolver.insert(WeatherContract.LocationEntry.CONTENT_URI, values);
+        long id = ContentUris.parseId(locationUri);
+        return id;
     }
 
 }

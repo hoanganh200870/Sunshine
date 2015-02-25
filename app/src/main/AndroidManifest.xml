@@ -36,6 +36,8 @@
             android:enabled="true"
             android:exported="true"
             android:permission="com.hcmut.hoanganh.sunshine.permission"/>
+        <service android:name=".service.SunshineService">
+        </service>
     </application>
 
     <permission android:name="com.hcmut.hoanganh.sunshine.permission"
