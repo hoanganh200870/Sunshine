@@ -17,7 +17,7 @@ import hcmut.hoanganh.sunshine.data.WeatherContract;
  */
 public class Utility {
 
-    public static String getLocationSetting(Context context) {
+    public static String getPreferredLocation(Context context) {
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String key = context.getString(R.string.pref_location_key);
         String defaultValue = context.getString(R.string.pref_location_default);

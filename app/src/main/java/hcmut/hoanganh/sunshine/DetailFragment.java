@@ -43,7 +43,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle arguments = getArguments();
         Context context = getActivity();
         boolean isMetric = Utility.isMetric(context);
-        String location = Utility.getLocationSetting(context);
+        String location = Utility.getPreferredLocation(context);
         if (arguments != null && arguments.containsKey(DATE_EXTRA) &&
                 (mLocation != null && !location.equals(mLocation) || this.isMetric != isMetric)) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
@@ -56,7 +56,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         Bundle bundle = getArguments();
         String date = bundle.getString(DATE_EXTRA);
         if (bundle != null && date != null) {
-            mLocation = Utility.getLocationSetting(activity);
+            mLocation = Utility.getPreferredLocation(activity);
             isMetric = Utility.isMetric(activity);
 
             Uri uri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(mLocation, date);

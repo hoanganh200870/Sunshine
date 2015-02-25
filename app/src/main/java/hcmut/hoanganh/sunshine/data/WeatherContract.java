@@ -35,7 +35,7 @@ public class WeatherContract {
     // TODO Uncomment for
     // 4b - Adding ContentProvider to our Contract
     // https://www.udacity.com/course/viewer#!/c-ud853/l-1576308909/m-1637521471
-    public static final String CONTENT_AUTHORITY = "com.example.android.sunshine.app";
+    public static final String CONTENT_AUTHORITY = "hcmut.hoanganh.sunshine.app";
 
     // Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
     // the content provider.

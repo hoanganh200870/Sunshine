@@ -78,7 +78,7 @@ public class WeatherProvider extends ContentProvider {
                 + WeatherContract.LocationEntry.TABLE_NAME + "." + WeatherContract.LocationEntry._ID);
     }
 
-    private static final String sLocationSetttingSelection = WeatherContract.LocationEntry.TABLE_NAME + "."
+    private static final String sLocationSettingSelection = WeatherContract.LocationEntry.TABLE_NAME + "."
             + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ? ";
 
     private static final String sLocationSettingWithStartDateSelection = WeatherContract.LocationEntry.TABLE_NAME + "."
@@ -97,7 +97,7 @@ public class WeatherProvider extends ContentProvider {
         String[] selectionArgs;
 
         if (startDate == null) {
-            selection = sLocationSetttingSelection;
+            selection = sLocationSettingSelection;
             selectionArgs = new String[] { locationSetting };
         } else {
             selection = sLocationSettingWithStartDateSelection;

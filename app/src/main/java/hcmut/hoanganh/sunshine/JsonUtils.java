@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+import hcmut.hoanganh.sunshine.adapter.SunshineSyncAdapter;
 import hcmut.hoanganh.sunshine.data.WeatherContract;
 
 /**
@@ -143,6 +145,18 @@ public class JsonUtils {
             ContentResolver contentResolver = context.getContentResolver();
             int rowsInserted = contentResolver.bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, values);
             Log.v("Weather fetched", "Inserted " + rowsInserted + " rows of weather data");
+
+            // delete old data
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DATE, -1);
+            Date date = calendar.getTime();
+            String yesterday = WeatherContract.getDbDateString(date);
+
+            String where = WeatherContract.WeatherEntry.COLUMN_DATETEXT + " <= ? ";
+            String[] args = { yesterday };
+            contentResolver.delete(WeatherContract.WeatherEntry.CONTENT_URI, where, args);
+
+            SunshineSyncAdapter.notifyWeather(context);
         }
 
         return resultStrs;

@@ -22,14 +22,12 @@
                 android:id="@+id/txtDay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Today"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtDate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Feb 25" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 
@@ -50,7 +48,6 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="22"
                     android:textStyle="bold" />
 
                 <TextView
@@ -58,8 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="12" />
+                    android:gravity="center" />
 
             </LinearLayout>
 
@@ -73,15 +69,13 @@
                     android:id="@+id/imgIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@drawable/ic_launcher" />
+                    android:layout_gravity="center_horizontal" />
 
                 <TextView
                     android:id="@+id/txtDescription"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Cloud" />
+                    android:layout_gravity="center_horizontal" />
 
             </LinearLayout>
 
@@ -95,20 +89,17 @@
             <TextView
                 android:id="@+id/txtHumidity"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Humidity: 71%" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/txtPressure"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Pressure: 1016 hPa" />
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/txtWind"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Wind: 2 km/h NW" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

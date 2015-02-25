@@ -36,4 +36,18 @@
         Humidity: <xliff:g id="humidity">%1.0f</xliff:g> %%
     </string>
 
+    <string name="sync_account_type">sunshine.hoanganh.hcmut</string>
+    <string name="content_authority">hcmut.hoanganh.sunshine.app</string>
+    <string name="format_notification">
+        Forecast: <xliff:g id="condition">%1$s</xliff:g>
+        High: <xliff:g id="high">%2$s</xliff:g>
+        Low: <xliff:g id="low">%3$s</xliff:g>
+    </string>
+    <string name="pref_last_notification">last_sync</string>
+    <string name="pref_notification_title">Notification</string>
+    <string name="pref_notification_key">pref_notification</string>
+    <string name="pref_notification_on">Enable</string>
+    <string name="pref_notification_off">Disable</string>
+    <string name="pref_notification_default">true</string>
+
 </resources>

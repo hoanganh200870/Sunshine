@@ -1,13 +1,11 @@
 package hcmut.hoanganh.sunshine;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -15,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import hcmut.hoanganh.sunshine.adapter.SunshineSyncAdapter;
 
 
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
@@ -68,6 +68,8 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 
         ForecastFragment forecastFragment = (ForecastFragment) supportFragmentManager.findFragmentById(R.id.fragment_forecast);
         forecastFragment.setIsTwoPane(isTwoPane);
+
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
 
@@ -90,23 +92,6 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
-                return true;
-            case R.id.aciton_show_location:
-
-                SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                String key = getString(R.string.pref_location_key);
-                String defaultValue = getString(R.string.pref_location_default);
-                String location = defaultSharedPreferences.getString(key, defaultValue);
-
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = Uri.parse("geo:0,0").buildUpon().appendQueryParameter("q", location).build();
-                mapIntent.setData(uri);
-
-                ComponentName resolveActivity = mapIntent.resolveActivity(getPackageManager());
-                if (resolveActivity != null) {
-                    startActivity(mapIntent);
-                }
-
                 return true;
         }
 

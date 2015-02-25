@@ -7,8 +7,5 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/aciton_show_location"
-        android:title="Show location"
-        app:showAsAction="never" />
+
 </menu>

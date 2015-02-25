@@ -1,13 +1,15 @@
 package hcmut.hoanganh.sunshine;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -25,8 +27,8 @@ import android.widget.ListView;
 import java.util.Date;
 
 import hcmut.hoanganh.sunshine.adapter.ForecastAdapter;
+import hcmut.hoanganh.sunshine.adapter.SunshineSyncAdapter;
 import hcmut.hoanganh.sunshine.data.WeatherContract;
-import hcmut.hoanganh.sunshine.service.SunshineService;
 
 /**
  * Created by H.Anh on 18/01/2015.
@@ -68,7 +70,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
             WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
-            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
     };
 
     public static final int COL_ID = 0;
@@ -78,6 +82,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public static final int COL_MIN_TEMP = 4;
     public static final int COL_WEATHER_ID = 5;
     public static final int COL_LOCATION_SETTING = 6;
+    public static final int COL_LOCATION_LAT = 7;
+    public static final int COL_LOCATION_LONG = 8;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -85,7 +91,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         String startDate = WeatherContract.getDbDateString(now);
 
         Context context = getActivity();
-        mLocation = Utility.getLocationSetting(context);
+        mLocation = Utility.getPreferredLocation(context);
         isMetric = Utility.isMetric(context);
 
         Uri weatherLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(mLocation, startDate);
@@ -124,13 +130,15 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private void updateWeather() {
         Context context = getActivity();
 
-        Intent alarmIntent = new Intent(context, SunshineService.AlarmReceiver.class);
-//        alarmIntent.putExtra(SunshineService.AlarmReceiver.EXTRA_LOCATION, mLocation);
+//        Intent alarmIntent = new Intent(context, SunshineService.AlarmReceiver.class);
+////        alarmIntent.putExtra(SunshineService.AlarmReceiver.EXTRA_LOCATION, mLocation);
+//
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+//        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        long time = System.currentTimeMillis() + 5000;
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        long time = System.currentTimeMillis() + 5000;
-        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        SunshineSyncAdapter.syncImmediately(context);
     }
 
     @Override
@@ -138,7 +146,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onResume();
 
         Context context = getActivity();
-        String location = Utility.getLocationSetting(context);
+        String location = Utility.getPreferredLocation(context);
         boolean isMetric = Utility.isMetric(context);
         if (mLocation != null && !location.equals(mLocation) || this.isMetric != isMetric) {
             getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
@@ -152,6 +160,31 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         switch (id) {
             case R.id.action_refresh:
                 updateWeather();
+                return true;
+            case R.id.action_show_location:
+
+                if (weatherAdapter == null) {
+                    break;
+                }
+
+                Cursor cursor = weatherAdapter.getCursor();
+                if (cursor.moveToFirst()) {
+                    String lat = cursor.getString(COL_LOCATION_LAT);
+                    String lon = cursor.getString(COL_LOCATION_LONG);
+
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+                    Uri uri = Uri.parse("geo:" + lat + "," + lon);
+                    mapIntent.setData(uri);
+
+                    Context context = getActivity();
+                    PackageManager packageManager = context.getPackageManager();
+                    ComponentName resolveActivity = mapIntent.resolveActivity(packageManager);
+                    if (resolveActivity != null) {
+                        startActivity(mapIntent);
+                    }
+
+                }
+
                 return true;
         }
 

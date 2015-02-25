@@ -8,8 +8,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
+import hcmut.hoanganh.sunshine.adapter.SunshineSyncAdapter;
 import hcmut.hoanganh.sunshine.data.WeatherContract;
-import hcmut.hoanganh.sunshine.service.SunshineService;
 
 /**
  * Created by H.Anh on 19/01/2015.
@@ -70,8 +70,10 @@ public class SettingsActivity extends PreferenceActivity
             if (key.equals(locationKey)) {
 //                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
 //                weatherTask.execute();
-                Intent intent = new Intent(this, SunshineService.class);
-                startService(intent);
+//                Intent intent = new Intent(this, SunshineService.class);
+//                startService(intent);
+
+                SunshineSyncAdapter.syncImmediately(this);
 
             } else {
                 // notify code that weather may be impacted
